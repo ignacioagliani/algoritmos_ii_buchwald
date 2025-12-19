@@ -1,0 +1,50 @@
+# --- BINARIOS Y EJECUTABLES ---
+# Ignora todos los ejecutables
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+# Ignora el binario principal (si coincide con el nombre de carpeta/módulo)
+/debug
+/dist
+/bin
+
+# --- SEGURIDAD Y SECRETOS (CRÍTICO) ---
+# Archivos de variables de entorno
+.env
+.env.local
+.env.*.local
+*.env
+
+# Claves privadas y certificados
+*.pem
+*.key
+*.pub
+*.cert
+*.crt
+*.pfx
+*.p12
+
+# --- ARCHIVOS TEMPORALES Y DE LOGS ---
+*.log
+*.tmp
+*.temp
+out/
+
+# --- CONFIGURACIÓN DE IDEs ---
+# Visual Studio Code
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# JetBrains
+.idea/
+
+# Otros
+.DS_Store
+Thumbs.db
+*~
+*.swp
