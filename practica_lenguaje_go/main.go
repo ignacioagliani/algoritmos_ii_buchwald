@@ -1,9 +1,10 @@
 package main
 
 import (
+	"fmt"
 	practica "practica_lenguaje_go/funciones"
 )
 
 func main() {
-	practica.ImprimirParesUsuario()
+	fmt.Printf("%v\n",practica.EsPar(6))
 }

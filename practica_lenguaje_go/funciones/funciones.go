@@ -144,3 +144,39 @@ func ImprimirParesUsuario() {
 		}
 	}
 }
+
+/*
+Ejercicio 3.4. Área de polígonos
+a) Escribir una función que reciba las coordenadas de un vector en ℝ^3 (x,y,z)
+y devuelva la norma del vector, dada por ‖(𝑥, 𝑦, 𝑧)‖ = √(𝑥^2 + 𝑦^2 + 𝑧^2).
+Ejemplo: norma(3, 2, -4) → 5.3851
+*/
+func CalcularNorma(vector [3]float64) float64 {
+	norma := math.Pow(math.Pow(vector[0],2)+math.Pow(vector[1],2)+math.Pow(vector[2],2),0.5)
+	return norma
+}
+
+/*
+b) Escribir una función que reciba las coordenadas de dos vectores en ℝ^3
+(x1,y1,z1,x2,y2,z2) y devuelva las coordenadas del vector diferencia (debe
+devolver 3 valores numéricos).
+Ejemplo: diferencia(8, 7, -3, 5, 3, 2) → (3, 4, -5)
+*/
+func DevolverVectorDiferencia(x1,y1,z1,x2,y2,z2 int) [3]int {
+	componente_x := x1 - x2
+	componente_y := y1 - y2
+	componente_z := z1 - z2
+	vector_diferencia := [3]int{componente_x,componente_y,componente_z}
+	return vector_diferencia
+}
+
+/*
+Ejercicio 4.1. Escribir dos funciones que resuelvan los siguientes problemas:
+a) Dado un número entero 𝑛, indicar si es par o no.
+*/
+func EsPar(n int) bool {
+	if n % 2 == 0 {
+		return true
+	}
+	return false
+}
