@@ -6,5 +6,6 @@ import (
 )
 
 func main() {
-	fmt.Printf("%v\n",practica.EsPar(6))
+	var prom float64 = practica.CalcularPromedioNotas()
+	fmt.Printf("%f\n",prom)
 }

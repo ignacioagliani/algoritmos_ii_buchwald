@@ -9,6 +9,7 @@ import (
 	"os"
 	"strconv"
 	"math"
+	"strings"
 )
 
 /*
@@ -179,4 +180,84 @@ func EsPar(n int) bool {
 		return true
 	}
 	return false
+}
+/*
+b) Dado un número entero 𝑛, indicar si es primo o no.
+*/
+func EsPrimo(n int) bool {
+	switch {
+	case n <= 1:
+		return false
+	case n == 2:
+		return true
+	default:
+		for i := 2;i <= int(math.Sqrt(float64(n))); i++ { // Es suficiente probar hasta la raiz cuadrada
+			if n % i == 0 {
+				return false
+			}
+		}
+		return true
+	}
+}
+
+/*
+Ejercicio 4.2. Escribir una implementación propia de la función abs, que devuelva el valor
+absoluto de cualquier valor que reciba.
+*/
+func DevolverValorAbsoluto(n float64) float64 {
+	if n < 0 {
+		return (-1) * n
+	}
+	return n
+}
+
+/*
+Ejercicio 4.3. Escribir una función que reciba por parámetro una dimensión 𝑛, e imprima
+la matriz identidad correspondiente a esa dimensión.
+*/
+func DevolverMatrizIdentidad(n int) [][]int {
+	matriz_identidad := make([][]int, n)
+	for i := 0; i < n; i++ {
+		fila := make([]int,n)
+		fila[i] = 1
+		matriz_identidad[i] = fila
+	}
+	return matriz_identidad
+}
+
+/*
+Ejercicio 5.1. Escribir un programa que permita al usuario ingresar un conjunto de notas,
+preguntando a cada paso si desea ingresar más notas, e imprimiendo el promedio correspondiente.
+*/
+func CalcularPromedioNotas() float64 {
+	var suma_notas float64 = 0
+	var contador int = 0
+	buffer := bufio.NewScanner(os.Stdin)
+	for {
+		fmt.Println("¿Querés seguir ingresando notas? S/N")
+		buffer.Scan()
+		opcion := buffer.Text()
+		switch strings.ToLower(opcion) {
+		case "s":
+			fmt.Printf("Nota: ")
+			buffer.Scan()
+			nota_str := buffer.Text()
+			nota,err := strconv.ParseFloat(nota_str,64)
+			if err != nil {
+				fmt.Printf("%s es una nota inválida!\n",nota_str)
+				continue
+			}
+			suma_notas += nota
+			contador += 1
+		case "n":
+			if contador == 0 {
+				fmt.Println("No se cargaron notas")
+				return -1
+			}
+			return suma_notas / float64(contador)
+		default:
+			fmt.Println("Opción Inválida")
+			return -1
+		}
+	}
 }
