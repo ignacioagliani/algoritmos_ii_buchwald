@@ -261,3 +261,80 @@ func CalcularPromedioNotas() float64 {
 		}
 	}
 }
+/*
+Ejercicio 5.3. Manejo de contraseñas
+a) Escribir un programa que contenga una contraseña inventada, que le pregunte al usuario
+la contraseña, y no le permita continuar hasta que la haya ingresado correctamente.
+*/
+func PedirContraseña() {
+	var contraseña string = "abc123"
+	buffer := bufio.NewScanner(os.Stdin)
+	for {
+		fmt.Print("Contraseña: ")
+		buffer.Scan()
+		contraseña_usuario := buffer.Text()
+		if contraseña_usuario == contraseña {
+			fmt.Println("Acceso Concedido!")
+			return
+		}
+	}
+}
+
+/*
+b) Modificar el programa anterior para que solamente permita una cantidad fija de intentos.
+*/
+func PedirContraseñaLimitado(intentos int) {
+	contador_intentos := 0
+	contraseña := "aaa"
+	buffer := bufio.NewScanner(os.Stdin)
+	for {
+		if contador_intentos < intentos {
+			fmt.Print("Contraseña: ")
+			buffer.Scan()
+			contraseña_usuario := buffer.Text()
+			if contraseña_usuario == contraseña {
+				fmt.Println("Acceso concedido!")
+				return
+			}
+			contador_intentos += 1
+		} else {
+			fmt.Println("No se pudo acceder. Se acabaron los intentos!")
+			return
+		}
+	}
+}
+
+/*
+Ejercicio 5.10. Escribir una función que reciba un número natural e imprima todos los números
+primos que hay hasta ese número.
+*/
+func ImprimirRangoPrimos(n int) {
+	for i := range n+1 {
+		if EsPrimo(i) {
+			fmt.Println(i)
+		}
+	}
+}
+
+/*
+Ejercicio 6.1. Escribir funciones que dada una cadena de caracteres:
+a) Imprima los dos primeros caracteres.
+*/
+func ImprimirPrimerosDosCaracteres(cadena string) {
+	if len(cadena) < 2 {
+		fmt.Println(cadena)
+	} else {
+		fmt.Println(cadena[0:2])
+	}
+}
+
+/*
+b) Imprima los tres últimos caracteres.
+*/
+func ImprimirUltimosTresCaracteres(cadena string) {
+	if len(cadena) < 3 {
+		fmt.Println(cadena)
+	} else {
+		fmt.Println(cadena[len(cadena) - 3:])
+	}
+}
