@@ -1,10 +1,11 @@
 package main
 
 import (
-	"fmt"
+	//"fmt"
 	practica "practica_lenguaje_go/funciones"
 )
 
 func main() {
-	fmt.Printf("%v\n",practica.EsPar(6))
+	amigos := []string{"Monti","Juani","Juanba","Pedro"}
+	practica.ImprimirAlgunosMensajes(amigos,1,2)
 }
