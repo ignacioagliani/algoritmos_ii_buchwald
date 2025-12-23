@@ -338,3 +338,153 @@ func ImprimirUltimosTresCaracteres(cadena string) {
 		fmt.Println(cadena[len(cadena) - 3:])
 	}
 }
+
+/*
+c) Imprima dicha cadena cada dos caracteres. Ej.: 'recta' debería imprimir 'rca'
+*/
+func ImprimirCadaDos(cadena string) {
+	for i := 0; i < len(cadena); i += 2 {
+		fmt.Printf("%c",cadena[i])
+	}
+	fmt.Print("\n")
+}
+
+/*
+d) Dicha cadena en sentido inverso. Ej.: 'hola mundo!' debe imprimir '!odnum aloh'
+*/
+func ImprimirInverso(cadena string) {
+	indice := len(cadena) - 1
+	for indice >= 0 {
+		fmt.Printf("%c",cadena[indice])
+		indice -= 1
+	}
+	fmt.Print("\n")
+}
+
+/*
+e) Imprima la cadena en un sentido y en sentido inverso. Ej: 'reflejo' imprime
+'reflejoojelfer'.
+*/
+func ImprimirReflejo(cadena string) {
+	fmt.Print(cadena)
+	ImprimirInverso(cadena)
+}
+
+/*
+Ejercicio 6.5. Escribir una función que dada una cadena de caracteres, devuelva:
+a) La primera letra de cada palabra. Por ejemplo, si recibe 'Universal Serial Bus' debe
+devolver 'USB'.
+*/
+func DevolverIniciales(cadena string) string {
+	var iniciales string
+	iniciales += string(cadena[0])
+	for i := 0; i < len(cadena); i++ {
+		if string(cadena[i]) == " " {
+			iniciales += string(cadena[i+1])
+		}
+	}
+	return iniciales
+}
+
+/*
+b) Dicha cadena con la primera letra de cada palabra en mayúsculas. Por ejemplo, si recibe
+'república argentina' debe devolver 'República Argentina'.
+*/
+func Capitalizar(cadena string) string {
+	cadena = strings.TrimSpace(cadena)
+	var capitalizada string
+	capitalizada += strings.ToUpper(string(cadena[0]))
+	for i := 1; i < len(cadena); i++ {
+		if string(cadena[i]) == " " {
+			capitalizada += " "
+			capitalizada += strings.ToUpper(string(cadena[i+1]))
+			i += 2
+		}
+		capitalizada += string(cadena[i])
+	}
+	return capitalizada
+}
+
+/*
+Ejercicio 6.7. Escribir funciones que dadas dos cadenas de caracteres:
+a) Indique si la segunda cadena es una subcadena de la primera. Por ejemplo, 'cadena'
+es una subcadena de 'subcadena'.
+*/
+func EsSubcadena(cadena,subcadena string) bool {
+	if strings.Contains(cadena,subcadena) {
+		return true
+	}
+	return false
+}
+
+/*
+b) Devuelva la que sea anterior en orden alfábetico. Por ejemplo, si recibe 'kde' y 'gnome'
+debe devolver 'gnome'.
+*/
+func DevolverMenor(cadena1,cadena2 string) string {
+	if cadena1 < cadena2 {
+		return cadena1
+	}
+	return cadena2
+}
+
+/* Todo lo que sea tuplas/listas lo cambio por slices! */
+/*
+Ejercicio 7.1. Escribir una función que reciba una tupla de elementos e indique si se encuentran
+ordenados de menor a mayor o no.
+*/
+func EstaOrdenadoMenorMayor(arreglo []int) bool {
+	if len(arreglo) < 2 {
+		return true
+	}
+	var i int = arreglo[0]
+	for _,elemento := range arreglo {
+		if elemento < i {
+			return false
+		}
+		i = elemento
+	}
+	return true
+}
+
+/*
+Ejercicio 7.2. Dominó.
+a) Escribir una función que indique si dos fichas de dominó encajan o no. Las fichas son
+recibidas en dos tuplas, por ejemplo: (3,4) y (5,4)
+*/
+func EncajaDomino(ficha1,ficha2 []int) bool {
+	if len(ficha1) != 2 || len(ficha2) != 2 {
+		return false
+	}
+	if ficha1[0] == ficha2[0] || ficha1[0] == ficha2[1] || ficha1[1] == ficha2[0] || ficha1[1] == ficha2[1] {
+		return true
+	}
+	return false
+}
+
+/*
+Ejercicio 7.3. Campaña electoral
+a) Escribir una función que reciba una tupla con nombres, y para cada nombre imprima
+el mensaje Estimado <nombre>, vote por mí.
+*/
+func ImprimirMensajeElectoral(nombres []string) {
+	for _,nombre := range nombres {
+		fmt.Printf("Estimado %s, vote por mí\n",nombre)
+	}
+}
+
+/*
+b) Escribir una función que reciba una tupla con nombres, una posición de origen p y una
+cantidad n, e imprima el mensaje anterior para los n nombres que se encuentran a partir
+de la posición p.
+*/
+func ImprimirAlgunosMensajes(nombres []string, p int, n int) {
+
+	if p < 0 || p >= len(nombres) || p + n > len(nombres){
+		return
+	}
+	seleccionados := nombres[p:p + n]
+	for _,nombre := range seleccionados {
+		fmt.Printf("Estimado %s, vote por mí\n",nombre)
+	}
+}

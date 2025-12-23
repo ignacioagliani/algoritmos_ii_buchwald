@@ -6,5 +6,6 @@ import (
 )
 
 func main() {
-	practica.ImprimirUltimosTresCaracteres("holaa")
+	amigos := []string{"Monti","Juani","Juanba","Pedro"}
+	practica.ImprimirAlgunosMensajes(amigos,1,2)
 }
