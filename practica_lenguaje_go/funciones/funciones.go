@@ -488,3 +488,197 @@ func ImprimirAlgunosMensajes(nombres []string, p int, n int) {
 		fmt.Printf("Estimado %s, vote por mí\n",nombre)
 	}
 }
+
+/*
+c) Modificar las funciones anteriores para que tengan en cuenta el género del destinatario,
+para ello, deberán recibir una tupla de tuplas, conteniendo el nombre y el género.
+*/
+func ImprimirMensajesDiscriminadoGenero(personas [][]string) {
+	for _,info := range personas {
+		genero := strings.ToUpper(strings.TrimSpace(info[1]))
+		if genero == "H" {
+			fmt.Printf("Estimado %s, vote por mí\n",info[0])
+		} else if genero == "M" {
+			fmt.Printf("Estimada %s, vote por mí\n",info[0])
+		} else {
+			fmt.Println("Sexo Inexistente")
+		}
+	}
+}
+
+/*
+Ejercicio 7.4. Vectores
+a) Escribir una función que reciba dos vectores y devuelva su producto escalar.
+*/
+func CalcularProductoEscalar(vector1, vector2 []int) (int,error) {
+	len_vector1 := len(vector1)
+	len_vector2 := len(vector2)
+	if len_vector1 != len_vector2 {
+		return 0,fmt.Errorf("Error: los vectores no poseen el mismo tamaño.")
+	}
+	producto_escalar := 0
+	for i := 0; i < len_vector1; i++ {
+		producto_escalar += vector1[i] * vector2[i]
+	}
+	return producto_escalar,nil
+}
+
+/*
+b) Escribir una función que reciba dos vectores y devuelva si son o no ortogonales.
+*/
+func SonOrtogonales(vector1,vector2 []int) bool {
+	prod_escalar,err := CalcularProductoEscalar(vector1,vector2)
+	if prod_escalar != 0 || err != nil {
+		return false
+	}
+	return true
+}
+
+/*
+c) Escribir una función que reciba dos vectores y devuelva si son paralelos o no.
+*/
+func SonParalelos(vector1,vector2 []int) bool {
+	len_vector1 := len(vector1)
+	len_vector2 := len(vector2)
+	if len_vector1 != len_vector2 {
+		return false
+	}
+	for i := 0; i < len_vector1; i++ {
+		if vector1[0] > vector2[0] {
+			if vector1[i] % vector2[i] != 0 {
+				return false
+			}
+		} else {
+			if vector2[i] % vector1[i] != 0 {
+				return false
+			}
+		}
+	}
+	return true
+}
+
+/*
+d) Escribir una función que reciba un vector y devuelva su norma.
+*/
+func Norma(vector []int) (float64,error) {
+	len_vector := len(vector)
+	if len_vector == 0 {
+		return 0,fmt.Errorf("El vector no tiene componentes")
+	}
+	suma_componentes_cuadrado := 0
+	for i := 0; i < len_vector; i++ {
+		suma_componentes_cuadrado += vector[i] * vector[i]
+	}
+	norma := math.Sqrt(float64(suma_componentes_cuadrado))
+	return norma,nil
+}
+
+/*
+Ejercicio 7.5. Dada una lista de números enteros, escribir una función que:
+a) Devuelva una lista con todos los que sean primos.
+*/
+func DevolverArregloPrimos(arreglo_numeros []int) []int {
+	arreglo_primos := []int{}
+	for _,numero := range arreglo_numeros {
+		if EsPrimo(numero) {
+			arreglo_primos = append(arreglo_primos,numero)
+		}
+	}
+	return arreglo_primos
+}
+
+/*
+b) Devuelva la sumatoria y el promedio de los valores.
+*/
+func DevolverSumaYPromedio(arreglo_numeros []int) (int,float64,error) {
+	if len(arreglo_numeros) == 0 {
+		return 0,0,fmt.Errorf("Error: el arreglo está vacío!")
+	}
+	var suma float64 = 0
+	var contador float64 = 0
+	for _,numero := range arreglo_numeros {
+		suma += float64(numero)
+		contador += 1
+	}
+	return int(suma),suma/contador,nil
+}
+
+/*
+c) Devuelva una lista con el factorial de cada uno de esos números.
+*/
+func DevolverArregloFactorial(arreglo []int) []int {
+	arreglo_factorial := []int{}
+	for _,numero := range arreglo{
+		arreglo_factorial = append(arreglo_factorial,CalcularFactorialRecursivo(numero))
+	}
+	return arreglo_factorial
+}
+
+/*
+Ejercicio 7.6. Dada una lista de números enteros y un entero k, escribir una función que:
+a) Devuelva tres listas, una con los menores, otra con los mayores y otra con los iguales a k.
+*/
+func DevolverListasMenoresMayoresIguales(arreglo []int, k int) ([]int,[]int,[]int) {
+	menores := []int{}
+	mayores := []int{}
+	iguales := []int{}
+	for _,numero := range arreglo {
+		if numero < k {
+			menores = append(menores,numero)
+		} else if numero > k {
+			mayores = append(mayores,numero)
+		} else {
+			iguales = append(iguales,numero)
+		}
+	}
+	return menores,mayores,iguales
+}
+
+/*
+b) Devuelva una lista con aquellos que son múltiplos de k.
+*/
+func DevolverListaMultiplos(arreglo []int, k int) []int {
+	if k == 0 {
+		return []int{}
+	}
+	multiplos := []int{}
+	for _,numero := range arreglo {
+		if numero % k == 0 {
+			multiplos = append(multiplos,numero)
+		}
+	}
+	return multiplos
+}
+
+/*
+Ejercicio 7.7. Escribir una función que reciba una lista de tuplas (Apellido, Nombre, Inicial_
+segundo_nombre) y devuelva una lista de cadenas donde cada una contenga primero el
+nombre, luego la inicial con un punto, y luego el apellido.
+*/
+func DevolverArregloNombresConFormato(arreglo [][]string) []string {
+	arreglo_nombres_con_formato := []string{}
+	for _,tupla := range arreglo {
+		if len(tupla) < 3 {
+			continue
+		}
+		nombre_formateado := tupla[1] + " " + tupla[2] + ". " + tupla[0]
+		arreglo_nombres_con_formato = append(arreglo_nombres_con_formato,nombre_formateado)
+	}
+	return arreglo_nombres_con_formato
+}
+
+/*
+Ejercicio 7.8. Inversión de listas
+a) Realizar una función que, dada una lista, devuelva una nueva lista cuyo contenido sea
+igual a la original pero invertida. Así, dada la lista ['Di', 'buen', 'día', 'a', 'papa'],
+deberá devolver ['papa', 'a', 'día', 'buen', 'Di'].
+*/
+func DevolverArregloInvertido(arreglo []string) []string {
+	arreglo_invertido := []string{}
+	i := len(arreglo) - 1
+	for i >= 0{
+		arreglo_invertido = append(arreglo_invertido,arreglo[i])
+		i--
+	}
+	return arreglo_invertido
+}

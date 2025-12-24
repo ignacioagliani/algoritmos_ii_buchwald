@@ -1,11 +1,11 @@
 package main
 
 import (
-	//"fmt"
+	"fmt"
 	practica "practica_lenguaje_go/funciones"
 )
 
 func main() {
-	amigos := []string{"Monti","Juani","Juanba","Pedro"}
-	practica.ImprimirAlgunosMensajes(amigos,1,2)
+	v := []string{}
+	fmt.Println(practica.DevolverArregloInvertido(v))
 }
