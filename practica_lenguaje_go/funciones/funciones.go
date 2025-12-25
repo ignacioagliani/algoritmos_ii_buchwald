@@ -682,3 +682,21 @@ func DevolverArregloInvertido(arreglo []string) []string {
 	}
 	return arreglo_invertido
 }
+/*
+Ejercicio 7.10. Matrices.
+a) Escribir una función que reciba dos matrices y devuelva la suma.
+*/
+func SumarMatrices(matriz1,matriz2 [][]int) ([][]int,error) {
+	if len(matriz1) != len(matriz2) || len(matriz1[0]) != len(matriz2[0]){
+		return [][]int{},fmt.Errorf("Error: Tamaños Distintos!")
+	}
+	matriz_suma := [][]int{}
+	for i := 0; i < len(matriz1); i++ {
+		fila := []int{}
+		for j := 0; j < len(matriz1[0]); j++ {
+			fila = append(fila,matriz1[i][j] + matriz2[i][j])
+		}
+		matriz_suma = append(matriz_suma,fila)
+	}
+	return matriz_suma,nil
+}
