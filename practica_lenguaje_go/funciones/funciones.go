@@ -10,6 +10,8 @@ import (
 	"strconv"
 	"math"
 	"strings"
+	"io"
+	"math/rand/v2"
 )
 
 /*
@@ -699,4 +701,201 @@ func SumarMatrices(matriz1,matriz2 [][]int) ([][]int,error) {
 		matriz_suma = append(matriz_suma,fila)
 	}
 	return matriz_suma,nil
+}
+
+/*
+Ejercicio 7.12. Funciones que reciben funciones.
+a) Escribir una funcion llamada map, que reciba una función y una lista y devuelva la lista
+que resulta de aplicar la función recibida a cada uno de los elementos de la lista recibida.
+*/
+/* Función de Ejemplo */
+func ElevarCuadrado (n int) int {
+	return n * n
+}
+
+func Map(funcion func(int) int,arreglo []int) []int {
+	mapeado := []int{}
+	for _,elemento := range arreglo {
+		mapeado = append(mapeado,funcion(elemento))
+	}
+	return mapeado
+}
+
+/*
+b) Escribir una función llamada filter, que reciba una función y una lista y devuelva una
+lista con los elementos de la lista recibida para los cuales la función recibida devuelve un
+valor verdadero.
+*/
+func Filter(funcion func(int) bool, arreglo []int) []int {
+	arreglo_filtrado := []int{}
+	for _,elemento := range arreglo {
+		if funcion(elemento) {
+			arreglo_filtrado = append(arreglo_filtrado,elemento)
+		}
+	}
+	return arreglo_filtrado
+}
+
+/*
+Ejercicio 11.1. Escribir una función, llamada head que reciba un archivo y un número N e
+imprima las primeras N líneas del archivo.
+*/
+func Head(ruta_archivo string, N int) {
+	archivo,err := os.Open(ruta_archivo)
+	if err != nil {
+		fmt.Println("No se pudo abrir el archivo")
+		return
+	}
+	defer archivo.Close()
+
+	buffer := bufio.NewScanner(archivo)
+	lineas_leidas := 0
+	for N > 0 && lineas_leidas < N && buffer.Scan() {
+		fmt.Printf("%s\n",buffer.Text())
+		lineas_leidas += 1
+	}
+	err = buffer.Err()
+	if err != nil {
+		fmt.Println(err)
+	}
+}
+
+/*
+Ejercicio 11.2. Escribir una función, llamada cp, que copie todo el contenido de un archivo (sea
+de texto o binario) a otro, de modo que quede exactamente igual.
+*/
+func Cp(ruta_archivo_origen,ruta_archivo_destino string) {
+	destino,err1 := os.Create(ruta_archivo_destino)
+	if err1 != nil {
+		fmt.Println("Error al abrir el archivo de destino!")
+		return
+	}
+	defer destino.Close()
+
+	origen,err2 := os.Open(ruta_archivo_origen)
+	if err2 != nil {
+		fmt.Println("Error al abrir el archivo de origen")
+		return
+	}
+	defer origen.Close()
+
+	_,err3 := io.Copy(destino,origen)
+	if err3 != nil {
+		fmt.Println("No se pudieron copiar los bytes")
+		return
+	}
+	/*
+	Si se quiere solo copiar texto normal, se hace así (quitando el bloque io.Copy()):
+	linea := bufio.NewScanner(origen)
+	datawriter := bufio.NewWriter(destino)
+	for linea.Scan() {
+		_,err4 := datawriter.WriteString(linea.Text() + "\n")
+		if err4 != nil {
+			fmt.Println("Error al Escribir")
+			return
+		}
+	}
+	datawriter.Flush()
+	*/
+}
+
+/*
+Ejercicio 11.3. Escribir una función, llamada wc, que dado un archivo de texto, lo procese e
+imprima por pantalla cuántas líneas, cuantas palabras y cuántos caracteres contiene el archivo.
+*/
+func Wc(ruta_archivo string) {
+	lineas := 0
+	palabras := 0
+	caracteres := 0
+	archivo,err := os.Open(ruta_archivo)
+	if err != nil {
+		fmt.Println("No se pudo abrir el archivo")
+		return
+	}
+	defer archivo.Close()
+
+	linea := bufio.NewScanner(archivo)
+	for linea.Scan() {
+		lineas += 1
+		palabras_separadas := strings.Split(linea.Text()," ")
+		for _,palabra := range palabras_separadas {
+			palabras += 1
+			for range palabra {
+				caracteres += 1
+			}
+		}
+	}
+	fmt.Printf("Cantidad Lineas: %d\nCantidad Palabras: %d\nCantidad Letras: %d\n",lineas,palabras,caracteres)
+}
+
+/*
+Ejercicio 11.4. Escribir una función, llamada grep, que reciba una cadena y un archivo de texto,
+e imprima las líneas del archivo que contienen la cadena recibida.
+*/
+
+
+/*
+Ejercicio 15.1. Escribir una función recursiva que reciba un número positivo 𝑛 y devuelva la
+cantidad de dígitos que tiene.
+*/
+func DevolverCantidadDigitos(n int) int {
+	if n / 10 == 0 {
+		return 1
+	}
+	return 1 + DevolverCantidadDigitos(n / 10)
+}
+/*
+Ejercicio 15.2. Escribir una función recursiva que simule el siguiente experimento: Se tiene una
+rata en una jaula con 3 caminos, entre los cuales elige al azar (cada uno tiene la misma probabilidad),
+si elige el 1 luego de 3 minutos vuelve a la jaula, si elige el 2 luego de 5 minutos
+vuelve a la jaula, en el caso de elegir el 3 luego de 7 minutos sale de la jaula. La rata no aprende,
+siempre elige entre los 3 caminos con la misma probabilidad, pero quiere su libertad, por lo que
+recorrerá los caminos hasta salir de la jaula.
+La función debe devolver el tiempo que tarda la rata en salir de la jaula.
+*/
+func Experimento() int {
+	eleccion_rata := rand.IntN(3) + 1 // Rango entre [0,3) a diferencia del randint de Python. Asi que le sumo 1.
+	switch eleccion_rata {
+	case 1:
+		return 3 + Experimento()
+	case 2:
+		return 5 + Experimento()
+	default:
+		return 7
+	}
+}
+
+/*
+Ejercicio 15.3. Escribir una función recursiva que reciba 2 enteros n y b y devuelva True si n es
+potencia de b.
+Ejemplos:
+es_potencia(8, 2) -> True
+es_potencia(64, 4) -> True
+es_potencia(70, 10) -> False
+*/
+func EsPotencia(n,b int) bool {
+	if n < 0 || b < 0 {
+		fmt.Println("No se admiten número negativos")
+		return false
+	}
+	if n == 1 {
+		return true
+	}
+	if b == 0 {
+		return n == 0
+	}
+	if b == 1 {
+		return n == 1
+	}
+	return _EsPotencia(n,b,b)
+}
+
+func _EsPotencia(n,b,j int) bool {
+	if b == n {
+		return true
+	} else if b > n {
+		return false
+	} else {
+		return _EsPotencia(n,b*j,j)
+	}
 }
