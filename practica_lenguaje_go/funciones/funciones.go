@@ -899,3 +899,67 @@ func _EsPotencia(n,b,j int) bool {
 		return _EsPotencia(n,b*j,j)
 	}
 }
+
+/*
+Ejercicio 15.5. Escribir dos funciones mutualmente recursivas par(n) e impar(n)
+que determinen la paridad del numero natural dado, conociendo solo que:
+• 1 es impar.
+• Si un número es impar, su antecesor es par; y viceversa.
+*/
+func Par(n uint) bool {
+	if n == 1 {
+		return false
+	}
+	if n == 2 || n == 0 {
+		return true
+	}
+	return Impar(n-2)
+}
+
+func Impar(n uint) bool {
+	if n == 1 {
+		return true
+	}
+	if n == 2 || n == 0 {
+		return false
+	}
+	return Par(n-2)
+}
+
+/*
+Ejercicio 15.6. Escribir una función recursiva que calcule recursivamente el n-ésimo número
+triangular (el número 1 + 2 + 3 + ⋯ + 𝑛).
+*/
+func CalcularNumeroTriangular(n uint) uint {
+	if n == 0 {
+		return 0
+	}
+	return n + CalcularNumeroTriangular(n - 1)
+}
+
+/*
+Ejercicio 15.8. Escribir una funcion recursiva que encuentre el mayor elemento de una lista.
+*/
+func MayorElemento(arreglo []int) []int {
+	if len(arreglo) == 1 {
+		return arreglo
+	}
+	if arreglo[0] > arreglo[1] {
+		arreglo = append(arreglo[:1], arreglo[2:]...)
+		return MayorElemento(arreglo)
+	}
+	return MayorElemento(arreglo[1:])
+}
+
+/*
+Ejercicio 15.9. Escribir una función recursiva para replicar los elementos de una lista una
+cantidad n de veces. Por ejemplo:
+replicar([1, 3, 3, 7], 2) -> ([1, 1, 3, 3, 3, 3, 7, 7])
+*/
+func Replicar(arreglo []int, n uint) []int {
+	return _Replicar(arreglo,n,[]int{})
+}
+
+func _Replicar(arreglo []int, n uint, arreglo_replicado []int) []int {
+
+}

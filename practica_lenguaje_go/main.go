@@ -6,5 +6,6 @@ import (
 )
 
 func main() {
-	fmt.Println(practica.EsPotencia(64,4))
+	a := []int{100,2,3,4,50,60}
+	fmt.Println(practica.MayorElemento(a))
 }
