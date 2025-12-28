@@ -10,6 +10,8 @@ import (
 	"strconv"
 	"math"
 	"strings"
+	"io"
+	"math/rand/v2"
 )
 
 /*
@@ -700,3 +702,421 @@ func SumarMatrices(matriz1,matriz2 [][]int) ([][]int,error) {
 	}
 	return matriz_suma,nil
 }
+
+/*
+Ejercicio 7.12. Funciones que reciben funciones.
+a) Escribir una funcion llamada map, que reciba una función y una lista y devuelva la lista
+que resulta de aplicar la función recibida a cada uno de los elementos de la lista recibida.
+*/
+/* Función de Ejemplo */
+func ElevarCuadrado (n int) int {
+	return n * n
+}
+
+func Map(funcion func(int) int,arreglo []int) []int {
+	mapeado := []int{}
+	for _,elemento := range arreglo {
+		mapeado = append(mapeado,funcion(elemento))
+	}
+	return mapeado
+}
+
+/*
+b) Escribir una función llamada filter, que reciba una función y una lista y devuelva una
+lista con los elementos de la lista recibida para los cuales la función recibida devuelve un
+valor verdadero.
+*/
+func Filter(funcion func(int) bool, arreglo []int) []int {
+	arreglo_filtrado := []int{}
+	for _,elemento := range arreglo {
+		if funcion(elemento) {
+			arreglo_filtrado = append(arreglo_filtrado,elemento)
+		}
+	}
+	return arreglo_filtrado
+}
+
+/*
+Ejercicio 11.1. Escribir una función, llamada head que reciba un archivo y un número N e
+imprima las primeras N líneas del archivo.
+*/
+func Head(ruta_archivo string, N int) {
+	archivo,err := os.Open(ruta_archivo)
+	if err != nil {
+		fmt.Println("No se pudo abrir el archivo")
+		return
+	}
+	defer archivo.Close()
+
+	buffer := bufio.NewScanner(archivo)
+	lineas_leidas := 0
+	for N > 0 && lineas_leidas < N && buffer.Scan() {
+		fmt.Printf("%s\n",buffer.Text())
+		lineas_leidas += 1
+	}
+	err = buffer.Err()
+	if err != nil {
+		fmt.Println(err)
+	}
+}
+
+/*
+Ejercicio 11.2. Escribir una función, llamada cp, que copie todo el contenido de un archivo (sea
+de texto o binario) a otro, de modo que quede exactamente igual.
+*/
+func Cp(ruta_archivo_origen,ruta_archivo_destino string) {
+	destino,err1 := os.Create(ruta_archivo_destino)
+	if err1 != nil {
+		fmt.Println("Error al abrir el archivo de destino!")
+		return
+	}
+	defer destino.Close()
+
+	origen,err2 := os.Open(ruta_archivo_origen)
+	if err2 != nil {
+		fmt.Println("Error al abrir el archivo de origen")
+		return
+	}
+	defer origen.Close()
+
+	_,err3 := io.Copy(destino,origen)
+	if err3 != nil {
+		fmt.Println("No se pudieron copiar los bytes")
+		return
+	}
+	/*
+	Si se quiere solo copiar texto normal, se hace así (quitando el bloque io.Copy()):
+	linea := bufio.NewScanner(origen)
+	datawriter := bufio.NewWriter(destino)
+	for linea.Scan() {
+		_,err4 := datawriter.WriteString(linea.Text() + "\n")
+		if err4 != nil {
+			fmt.Println("Error al Escribir")
+			return
+		}
+	}
+	datawriter.Flush()
+	*/
+}
+
+/*
+Ejercicio 11.3. Escribir una función, llamada wc, que dado un archivo de texto, lo procese e
+imprima por pantalla cuántas líneas, cuantas palabras y cuántos caracteres contiene el archivo.
+*/
+func Wc(ruta_archivo string) {
+	lineas := 0
+	palabras := 0
+	caracteres := 0
+	archivo,err := os.Open(ruta_archivo)
+	if err != nil {
+		fmt.Println("No se pudo abrir el archivo")
+		return
+	}
+	defer archivo.Close()
+
+	linea := bufio.NewScanner(archivo)
+	for linea.Scan() {
+		lineas += 1
+		palabras_separadas := strings.Split(linea.Text()," ")
+		for _,palabra := range palabras_separadas {
+			palabras += 1
+			for range palabra {
+				caracteres += 1
+			}
+		}
+	}
+	fmt.Printf("Cantidad Lineas: %d\nCantidad Palabras: %d\nCantidad Letras: %d\n",lineas,palabras,caracteres)
+}
+
+/*
+Ejercicio 11.4. Escribir una función, llamada grep, que reciba una cadena y un archivo de texto,
+e imprima las líneas del archivo que contienen la cadena recibida.
+*/
+func Grep(cadena,ruta_archivo string) {
+	archivo,err := os.Open(ruta_archivo)
+	if err != nil {
+		fmt.Println("No se pudo abrir el archivo")
+		return
+	}
+	defer archivo.Close()
+
+	buffer := bufio.NewScanner(archivo)
+	for buffer.Scan() {
+		if strings.Contains(buffer.Text(),cadena) {
+			fmt.Printf("%s\n",buffer.Text())
+		}
+	}
+}
+
+/*
+Ejercicio 15.1. Escribir una función recursiva que reciba un número positivo 𝑛 y devuelva la
+cantidad de dígitos que tiene.
+*/
+func DevolverCantidadDigitos(n int) int {
+	if n / 10 == 0 {
+		return 1
+	}
+	return 1 + DevolverCantidadDigitos(n / 10)
+}
+/*
+Ejercicio 15.2. Escribir una función recursiva que simule el siguiente experimento: Se tiene una
+rata en una jaula con 3 caminos, entre los cuales elige al azar (cada uno tiene la misma probabilidad),
+si elige el 1 luego de 3 minutos vuelve a la jaula, si elige el 2 luego de 5 minutos
+vuelve a la jaula, en el caso de elegir el 3 luego de 7 minutos sale de la jaula. La rata no aprende,
+siempre elige entre los 3 caminos con la misma probabilidad, pero quiere su libertad, por lo que
+recorrerá los caminos hasta salir de la jaula.
+La función debe devolver el tiempo que tarda la rata en salir de la jaula.
+*/
+func Experimento() int {
+	eleccion_rata := rand.IntN(3) + 1 // Rango entre [0,3) a diferencia del randint de Python. Asi que le sumo 1.
+	switch eleccion_rata {
+	case 1:
+		return 3 + Experimento()
+	case 2:
+		return 5 + Experimento()
+	default:
+		return 7
+	}
+}
+
+/*
+Ejercicio 15.3. Escribir una función recursiva que reciba 2 enteros n y b y devuelva True si n es
+potencia de b.
+Ejemplos:
+es_potencia(8, 2) -> True
+es_potencia(64, 4) -> True
+es_potencia(70, 10) -> False
+*/
+func EsPotencia(n,b int) bool {
+	if n < 0 || b < 0 {
+		fmt.Println("No se admiten número negativos")
+		return false
+	}
+	if n == 1 {
+		return true
+	}
+	if b == 0 {
+		return n == 0
+	}
+	if b == 1 {
+		return n == 1
+	}
+	return _EsPotencia(n,b,b)
+}
+
+func _EsPotencia(n,b,j int) bool {
+	if b == n {
+		return true
+	} else if b > n {
+		return false
+	} else {
+		return _EsPotencia(n,b*j,j)
+	}
+}
+
+/*
+Ejercicio 15.5. Escribir dos funciones mutualmente recursivas par(n) e impar(n)
+que determinen la paridad del numero natural dado, conociendo solo que:
+• 1 es impar.
+• Si un número es impar, su antecesor es par; y viceversa.
+*/
+func Par(n uint) bool {
+	if n == 1 {
+		return false
+	}
+	if n == 2 || n == 0 {
+		return true
+	}
+	return Impar(n-2)
+}
+
+func Impar(n uint) bool {
+	if n == 1 {
+		return true
+	}
+	if n == 2 || n == 0 {
+		return false
+	}
+	return Par(n-2)
+}
+
+/*
+Ejercicio 15.6. Escribir una función recursiva que calcule recursivamente el n-ésimo número
+triangular (el número 1 + 2 + 3 + ⋯ + 𝑛).
+*/
+func CalcularNumeroTriangular(n uint) uint {
+	if n == 0 {
+		return 0
+	}
+	return n + CalcularNumeroTriangular(n - 1)
+}
+
+/*
+Ejercicio 15.8. Escribir una funcion recursiva que encuentre el mayor elemento de una lista.
+*/
+func MayorElemento(arreglo []int) []int {
+	if len(arreglo) == 1 {
+		return arreglo
+	}
+	if arreglo[0] > arreglo[1] {
+		arreglo = append(arreglo[:1], arreglo[2:]...)
+		return MayorElemento(arreglo)
+	}
+	return MayorElemento(arreglo[1:])
+}
+
+/*
+Ejercicio 15.9. Escribir una función recursiva para replicar los elementos de una lista una
+cantidad n de veces. Por ejemplo:
+replicar([1, 3, 3, 7], 2) -> ([1, 1, 3, 3, 3, 3, 7, 7])
+*/
+func Replicar(arreglo []int, n uint) []int {
+	return replicar(arreglo,n,[]int{})
+}
+
+func replicar(arreglo []int, n uint, arreglo_replicado []int) []int {
+	if len(arreglo) == 0 || n == 0 {
+		return arreglo_replicado
+	}
+	for range n {
+		arreglo_replicado = append(arreglo_replicado,arreglo[0])
+	}
+	return replicar(arreglo[1:],n,arreglo_replicado)
+}
+
+/*
+Ejercicio 15.10. Escribir una funcion recursiva que dada una cadena determine si en la misma
+hay más letras A o letras E.
+*/
+func masAoE (cadena string) int {
+	if len(cadena) == 0 {
+		return 0
+	}
+	cantidad_A_contra_E := 0
+	if string(cadena[0]) == "A" {
+		cantidad_A_contra_E = 1
+	}
+	if string(cadena[0]) == "E" {
+		cantidad_A_contra_E = -1
+	}
+	return cantidad_A_contra_E + masAoE(cadena[1:])
+}
+
+func MasAoE(cadena string) {
+	cantidad_A := masAoE(cadena)
+	if cantidad_A > 0 {
+		fmt.Println("Más A")
+	} else if cantidad_A < 0 {
+		fmt.Println("Más E")
+	} else {
+		fmt.Println("Misma cantidad")
+	}
+}
+
+/* Ejercicios de Structs (No son de la guía de Essaya) */
+
+/*
+1.	Definí un struct Persona { Nombre string; Edad int } y escribí:
+•	EsMayor() que devuelva true si Edad >= 18
+•	ImprimirInformacion() para imprimir “Nombre (Edad)”.
+*/
+// Esta es Pública
+type Persona struct {
+	Nombre string
+	Edad int
+}
+
+// Ya hay una función EsMayor antes, así que le cambio el nombre
+func (persona Persona) EsMayorStruct() bool {
+	return persona.Edad >= 18
+}
+
+func (persona Persona) ImprimirInformacion() {
+	fmt.Printf("%s (%d)\n",persona.Nombre,persona.Edad)
+}
+
+/*
+2.	struct Rectangulo { Ancho, Alto float64 }:
+•	método Area()
+•	método Perimetro()
+•	función que reciba un slice de rectángulos y devuelva el de mayor área.
+*/
+
+// Esta es Pública
+type Rectangulo struct {
+	Ancho float64
+	Alto float64
+}
+
+func (rec Rectangulo) Area() float64 {
+	return rec.Alto * rec.Ancho
+}
+
+func (rec Rectangulo) Perimetro() float64 {
+	return 2 * rec.Alto + 2 * rec.Ancho
+}
+
+/*
+3.	struct CuentaBancaria { Titular string; Saldo float64 }:
+•	métodos Depositar(monto float64) error (no permitir saldo negativo).
+•	Extraer(monto float64). error (no permitir saldo negativo)
+•	método Transferir(a *CuentaBancaria, monto float64) error.
+*/
+
+// Esta es privada
+type CuentaBancaria struct {
+	titular string
+	saldo float64
+}
+
+func CrearCuenta(nombre string, monto float64) (CuentaBancaria, error) {
+	if monto < 0 {
+		return CuentaBancaria{}, fmt.Errorf("monto inválido")
+	}
+	return CuentaBancaria{titular: nombre, saldo: monto}, nil
+}
+
+func (cuenta *CuentaBancaria) Depositar(monto float64) error {
+	if monto < 0 {
+		return fmt.Errorf("ERROR: no se admiten números negativos")
+	}
+	cuenta.saldo += monto
+	return nil
+}
+
+func (cuenta *CuentaBancaria) Extraer(monto float64) error {
+	if monto < 0 || monto > cuenta.saldo {
+		return fmt.Errorf("ERROR: monto inválido")
+	}
+	cuenta.saldo -= monto
+	return nil
+}
+
+func (cuenta *CuentaBancaria) Transferir(a *CuentaBancaria, monto float64) error {
+	if monto < 0 {
+		return fmt.Errorf("ERROR: monto inválido")
+	}
+	if a == nil {
+		return fmt.Errorf("La cuenta de destino no existe.")
+	}
+	extraccion := cuenta.Extraer(monto)
+	if extraccion != nil {
+		return extraccion
+	}
+	deposito := a.Depositar(monto)
+	if deposito != nil {
+		cuenta.saldo += monto
+		return deposito
+	}
+	return nil
+}
+
+func (cuenta CuentaBancaria) ConsultarSaldo() {
+	fmt.Printf("Titular: %s\nSaldo: $%f\n",cuenta.titular,cuenta.saldo)
+}
+
+/*
+4.	struct Producto { ID int; Nombre string; Precio float64 }:
+•	función AplicarDescuento(p Producto, porcentaje float64) Producto
+•	función que devuelva el producto más caro de un slice.
+*/

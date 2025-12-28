@@ -1,16 +1,19 @@
 package main
 
 import (
-	"fmt"
+	//"fmt"
 	practica "practica_lenguaje_go/funciones"
 )
 
 func main() {
-	m1 := [][]int{{1,2,3},{4,5,6},{7,8,9}}
-	m2 := [][]int{{1,2,3},{4,5,6},{7,8,9}}
-	ms,e := practica.SumarMatrices(m1,m2)
-	if e != nil {
-		fmt.Println(e)
+	cta1,err1 := practica.CrearCuenta("Ignacio",100)
+	cta2,err2 := practica.CrearCuenta("Otro",100)
+	if err1 != nil || err2 != nil {
+		return
 	}
-	fmt.Print(ms)
+	cta1.ConsultarSaldo()
+	cta2.ConsultarSaldo()
+	cta1.Transferir(&cta2,5)
+	cta1.ConsultarSaldo()
+	cta2.ConsultarSaldo()
 }
