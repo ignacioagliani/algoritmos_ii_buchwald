@@ -832,7 +832,21 @@ func Wc(ruta_archivo string) {
 Ejercicio 11.4. Escribir una función, llamada grep, que reciba una cadena y un archivo de texto,
 e imprima las líneas del archivo que contienen la cadena recibida.
 */
+func Grep(cadena,ruta_archivo string) {
+	archivo,err := os.Open(ruta_archivo)
+	if err != nil {
+		fmt.Println("No se pudo abrir el archivo")
+		return
+	}
+	defer archivo.Close()
 
+	buffer := bufio.NewScanner(archivo)
+	for buffer.Scan() {
+		if strings.Contains(buffer.Text(),cadena) {
+			fmt.Printf("%s\n",buffer.Text())
+		}
+	}
+}
 
 /*
 Ejercicio 15.1. Escribir una función recursiva que reciba un número positivo 𝑛 y devuelva la
@@ -957,9 +971,152 @@ cantidad n de veces. Por ejemplo:
 replicar([1, 3, 3, 7], 2) -> ([1, 1, 3, 3, 3, 3, 7, 7])
 */
 func Replicar(arreglo []int, n uint) []int {
-	return _Replicar(arreglo,n,[]int{})
+	return replicar(arreglo,n,[]int{})
 }
 
-func _Replicar(arreglo []int, n uint, arreglo_replicado []int) []int {
-
+func replicar(arreglo []int, n uint, arreglo_replicado []int) []int {
+	if len(arreglo) == 0 || n == 0 {
+		return arreglo_replicado
+	}
+	for range n {
+		arreglo_replicado = append(arreglo_replicado,arreglo[0])
+	}
+	return replicar(arreglo[1:],n,arreglo_replicado)
 }
+
+/*
+Ejercicio 15.10. Escribir una funcion recursiva que dada una cadena determine si en la misma
+hay más letras A o letras E.
+*/
+func masAoE (cadena string) int {
+	if len(cadena) == 0 {
+		return 0
+	}
+	cantidad_A_contra_E := 0
+	if string(cadena[0]) == "A" {
+		cantidad_A_contra_E = 1
+	}
+	if string(cadena[0]) == "E" {
+		cantidad_A_contra_E = -1
+	}
+	return cantidad_A_contra_E + masAoE(cadena[1:])
+}
+
+func MasAoE(cadena string) {
+	cantidad_A := masAoE(cadena)
+	if cantidad_A > 0 {
+		fmt.Println("Más A")
+	} else if cantidad_A < 0 {
+		fmt.Println("Más E")
+	} else {
+		fmt.Println("Misma cantidad")
+	}
+}
+
+/* Ejercicios de Structs (No son de la guía de Essaya) */
+
+/*
+1.	Definí un struct Persona { Nombre string; Edad int } y escribí:
+•	EsMayor() que devuelva true si Edad >= 18
+•	ImprimirInformacion() para imprimir “Nombre (Edad)”.
+*/
+// Esta es Pública
+type Persona struct {
+	Nombre string
+	Edad int
+}
+
+// Ya hay una función EsMayor antes, así que le cambio el nombre
+func (persona Persona) EsMayorStruct() bool {
+	return persona.Edad >= 18
+}
+
+func (persona Persona) ImprimirInformacion() {
+	fmt.Printf("%s (%d)\n",persona.Nombre,persona.Edad)
+}
+
+/*
+2.	struct Rectangulo { Ancho, Alto float64 }:
+•	método Area()
+•	método Perimetro()
+•	función que reciba un slice de rectángulos y devuelva el de mayor área.
+*/
+
+// Esta es Pública
+type Rectangulo struct {
+	Ancho float64
+	Alto float64
+}
+
+func (rec Rectangulo) Area() float64 {
+	return rec.Alto * rec.Ancho
+}
+
+func (rec Rectangulo) Perimetro() float64 {
+	return 2 * rec.Alto + 2 * rec.Ancho
+}
+
+/*
+3.	struct CuentaBancaria { Titular string; Saldo float64 }:
+•	métodos Depositar(monto float64) error (no permitir saldo negativo).
+•	Extraer(monto float64). error (no permitir saldo negativo)
+•	método Transferir(a *CuentaBancaria, monto float64) error.
+*/
+
+// Esta es privada
+type CuentaBancaria struct {
+	titular string
+	saldo float64
+}
+
+func CrearCuenta(nombre string, monto float64) (CuentaBancaria, error) {
+	if monto < 0 {
+		return CuentaBancaria{}, fmt.Errorf("monto inválido")
+	}
+	return CuentaBancaria{titular: nombre, saldo: monto}, nil
+}
+
+func (cuenta *CuentaBancaria) Depositar(monto float64) error {
+	if monto < 0 {
+		return fmt.Errorf("ERROR: no se admiten números negativos")
+	}
+	cuenta.saldo += monto
+	return nil
+}
+
+func (cuenta *CuentaBancaria) Extraer(monto float64) error {
+	if monto < 0 || monto > cuenta.saldo {
+		return fmt.Errorf("ERROR: monto inválido")
+	}
+	cuenta.saldo -= monto
+	return nil
+}
+
+func (cuenta *CuentaBancaria) Transferir(a *CuentaBancaria, monto float64) error {
+	if monto < 0 {
+		return fmt.Errorf("ERROR: monto inválido")
+	}
+	if a == nil {
+		return fmt.Errorf("La cuenta de destino no existe.")
+	}
+	extraccion := cuenta.Extraer(monto)
+	if extraccion != nil {
+		return extraccion
+	}
+	deposito := a.Depositar(monto)
+	if deposito != nil {
+		cuenta.saldo += monto
+		return deposito
+	}
+	return nil
+}
+
+func (cuenta CuentaBancaria) ConsultarSaldo() {
+	fmt.Printf("Titular: %s\nSaldo: $%f\n",cuenta.titular,cuenta.saldo)
+}
+
+/*
+4.	struct Producto { ID int; Nombre string; Precio float64 }:
+•	función AplicarDescuento(p Producto, porcentaje float64) Producto
+•	función que devuelva el producto más caro de un slice.
+*/
