@@ -1309,3 +1309,89 @@ func ArregloLibroEjemplo() []Libro {
 		Libro{"1515147","Álgebra Lineal","Claudio Pita Ruiz",15},
 	}
 }
+
+/*
+9.	struct Fecha { Dia, Mes, Anio int }:
+•	método EsValida() bool
+•	método AntesQue(otra Fecha) bool
+*/
+type Fecha struct {
+	dia, mes, anio int
+}
+
+func (fecha Fecha) EsValida() bool {
+	if fecha.dia < 1 || fecha.dia > 31 {
+		return false
+	}
+	if fecha.mes < 1 || fecha.mes > 12 {
+		return false
+	}
+	if fecha.mes == 2 {
+		if (fecha.anio % 400 == 0) || (fecha.anio % 4 == 0 && fecha.anio % 100 != 0) {
+			if fecha.dia > 29 {
+				return false
+			}
+			return true
+		}
+		if fecha.dia > 28 {
+			return false
+		}
+		return true
+	}
+	if fecha.mes == 4 || fecha.mes == 6 || fecha.mes == 9 || fecha.mes == 11 {
+		if fecha.dia > 30 {
+			return false
+		}
+	}
+	return true
+}
+
+func (fecha Fecha) AntesQue(otra Fecha) bool {
+	if !fecha.EsValida() || !otra.EsValida() {
+		return false
+	}
+	if fecha.anio > otra.anio {
+		return false
+	}
+	if fecha.anio == otra.anio {
+		if fecha.mes == otra.mes {
+			if fecha.dia >= otra.dia {
+				return false
+			}
+		} else if fecha.mes > otra.mes {
+			return false
+		}
+	}
+	return true
+}
+
+/*
+10.	struct Vector { Datos []int }:
+•	método Norma() float64
+•	método ProductoEscalar(otro Vector) (int, error) (error si longitudes distintas)
+*/
+type Vector struct {
+	datos []int
+}
+
+func (v Vector) Norma() float64 {
+	if len(v.datos) == 0 {
+		return 0
+	}
+	suma_componentes_cuadrado := 0
+	for _,componente := v.datos {
+		suma_componentes_cuadrado += componente * componente
+	}
+	return math.Sqrt(float64(suma_componentes_cuadrado))
+}
+
+func (v Vector) ProductoEscalar(otro Vector) (int, error) {
+	if len(v.datos) != len(otro.datos) {
+		return 0,fmt.Errorf("Error: no coincide la longitud")
+	}
+	producto_escalar := 0
+	for i,_ := range v.datos {
+		producto_escalar += v.datos[i] * otro.datos[i]
+	}
+	return producto_escalar,nil
+}
