@@ -1120,3 +1120,278 @@ func (cuenta CuentaBancaria) ConsultarSaldo() {
 •	función AplicarDescuento(p Producto, porcentaje float64) Producto
 •	función que devuelva el producto más caro de un slice.
 */
+type Producto struct {
+	id int
+	nombre string
+	precio float64
+}
+
+func AplicarDescuento(p Producto, porcentaje float64) (Producto,error) {
+	if porcentaje > 100 || porcentaje < 0 {
+		return p,fmt.Errorf("Porcentaje Inválido")
+	}
+	descuento := p.precio - (p.precio*(porcentaje/100))
+	p.precio = descuento
+	return p,nil
+}
+
+func MasCaro(productos []Producto) (Producto,error) {
+	if len(productos) == 0 {
+		return Producto{},fmt.Errorf("Lista vacía")
+	}
+	var indice int = 0
+	var mayor_precio float64 = productos[0].precio
+	for i,prod := range productos {
+		if prod.precio > mayor_precio {
+			indice = i
+			mayor_precio = prod.precio
+		}
+	}
+	return productos[indice],nil
+}
+
+/*
+5.	struct Punto { X, Y float64 } y struct Segmento { A, B Punto }:
+•	método Longitud() para el segmento
+•	método Mover(dx, dy float64) que traslade ambos puntos.
+*/
+type Punto struct {
+	X,Y float64
+}
+type Segmento struct {
+	A,B Punto
+}
+
+func (s Segmento) Longitud() float64 {
+	A := s.A
+	B := s.B
+	len_x := A.X - B.X
+	len_y := A.Y - B.Y
+	return math.Sqrt(len_x*len_x + len_y*len_y)
+}
+
+func (s *Segmento) Mover(dx,dy float64) {
+	s.A.X += dx
+	s.B.X += dx
+	s.A.Y += dy
+	s.B.Y += dy
+}
+
+/*
+6.	struct Alumno { Legajo int; Nombre string; Notas []float64 }:
+•	método Promedio() (float64, error) (error si no tiene notas)
+•	función que filtre alumnos con promedio >= 7.
+*/
+type Alumno struct {
+	legajo int
+	nombre string
+	notas []float64
+}
+func (alumno Alumno) Promedio() (float64,error) {
+	if len(alumno.notas) == 0 {
+		return -1,fmt.Errorf("El alumno no cuenta con notas cargadas")
+	}
+	var suma_notas float64 = 0
+	for _,nota := range alumno.notas {
+		suma_notas += nota
+	}
+	return suma_notas/float64(len(alumno.notas)),nil
+}
+
+func FiltrarPromedio(arreglo_alumnos []Alumno) []Alumno {
+	alumnos_filtrados := []Alumno{}
+	for _,alumno := range arreglo_alumnos {
+		promedio,err := alumno.Promedio()
+		if err == nil {
+			if promedio >= 7 {
+				alumnos_filtrados = append(alumnos_filtrados,alumno)
+			}
+		}
+	}
+	return alumnos_filtrados
+}
+
+func CrearAlumnos() []Alumno { //Necesaria para poder usarse porque los campos del struct son privados
+	yo := Alumno{111111,"Ignacio",[]float64{10,10,10,9,9,8}}
+	otro1 := Alumno{111111,"Otro1",[]float64{}}
+	otro2 := Alumno{111111,"Otro12",[]float64{2,5,6}}
+	otro3 := Alumno{111111,"Otro3",[]float64{7,7,7}}
+	return []Alumno{yo,otro1,otro2,otro3}
+}
+
+/*
+7.	struct Pedido { Numero int; Items []Item } con struct Item { Nombre string; Cantidad int; PrecioUnit float64 }:
+•	método Total() float64
+•	función que agregue un item (si existe, sumar cantidad).
+*/
+type Pedido struct {
+	numero int
+	items []Items
+}
+
+type Items struct {
+	nombre string
+	cantidad int
+	precioUnitario float64
+}
+
+func (pedido Pedido) Total() float64 {
+	if len(pedido.items) == 0 {
+		return 0
+	}
+	var total float64 = 0
+	for _,item := range pedido.items {
+		total += item.precioUnitario * float64(item.cantidad)
+	}
+	return total
+}
+
+func AgregarItem(item Items, pedido *Pedido) {
+	for i,_ := range pedido.items {
+		if pedido.items[i].nombre == item.nombre {
+			pedido.items[i].cantidad += item.cantidad
+			return
+		}
+	}
+	pedido.items = append(pedido.items,item)
+}
+
+func PedidoFicticio () Pedido {
+	return Pedido{1,[]Items{Items{"Cheeseburger",2,10000},Items{"Papa Fritas",2,7000}}}
+}
+
+func ItemaAgregar() Items {
+	return Items{"Coca-Cola",2,4000}
+}
+
+/*
+8.	struct Libro { ISBN string; Titulo string; Autor string; Stock int }:
+•	método Prestar() error (si no hay stock, error)
+•	método Devolver() (incrementa stock)
+•	función para buscar libros por autor.
+*/
+type Libro struct {
+	isbn string
+	titulo string
+	autor string
+	stock int
+}
+
+func (libro *Libro) Prestar() error {
+	if libro.stock == 0 {
+		return fmt.Errorf("No hay stock. No se puede prestar.")
+	}
+	libro.stock -= 1
+	return nil
+}
+
+func (libro *Libro) Devolver(){
+	libro.stock += 1
+}
+
+func BuscarPorAutor(arreglo_libros []Libro, autor string) []Libro {
+	libros_autor := []Libro{}
+	for i,_ := range arreglo_libros {
+		if arreglo_libros[i].autor == autor {
+			libros_autor = append(libros_autor,arreglo_libros[i])
+		}
+	}
+	return libros_autor
+}
+
+func LibroEjemplo() Libro {
+	return Libro{"1515145","Análisis Vectorial","Claudio Pita Ruiz",0}
+}
+func ArregloLibroEjemplo() []Libro {
+	return []Libro{
+		Libro{"1515145","Análisis Vectorial","Claudio Pita Ruiz",10},
+		Libro{"1515146","Espacios métricos homogéneos de Lie-Banach","DI IORIO Y LUCERO, MARIA EUGENIA",20},
+		Libro{"1515147","Álgebra Lineal","Claudio Pita Ruiz",15},
+	}
+}
+
+/*
+9.	struct Fecha { Dia, Mes, Anio int }:
+•	método EsValida() bool
+•	método AntesQue(otra Fecha) bool
+*/
+type Fecha struct {
+	dia, mes, anio int
+}
+
+func (fecha Fecha) EsValida() bool {
+	if fecha.dia < 1 || fecha.dia > 31 {
+		return false
+	}
+	if fecha.mes < 1 || fecha.mes > 12 {
+		return false
+	}
+	if fecha.mes == 2 {
+		if (fecha.anio % 400 == 0) || (fecha.anio % 4 == 0 && fecha.anio % 100 != 0) {
+			if fecha.dia > 29 {
+				return false
+			}
+			return true
+		}
+		if fecha.dia > 28 {
+			return false
+		}
+		return true
+	}
+	if fecha.mes == 4 || fecha.mes == 6 || fecha.mes == 9 || fecha.mes == 11 {
+		if fecha.dia > 30 {
+			return false
+		}
+	}
+	return true
+}
+
+func (fecha Fecha) AntesQue(otra Fecha) bool {
+	if !fecha.EsValida() || !otra.EsValida() {
+		return false
+	}
+	if fecha.anio > otra.anio {
+		return false
+	}
+	if fecha.anio == otra.anio {
+		if fecha.mes == otra.mes {
+			if fecha.dia >= otra.dia {
+				return false
+			}
+		} else if fecha.mes > otra.mes {
+			return false
+		}
+	}
+	return true
+}
+
+/*
+10.	struct Vector { Datos []int }:
+•	método Norma() float64
+•	método ProductoEscalar(otro Vector) (int, error) (error si longitudes distintas)
+*/
+type Vector struct {
+	datos []int
+}
+
+func (v Vector) Norma() float64 {
+	if len(v.datos) == 0 {
+		return 0
+	}
+	suma_componentes_cuadrado := 0
+	for _,componente := v.datos {
+		suma_componentes_cuadrado += componente * componente
+	}
+	return math.Sqrt(float64(suma_componentes_cuadrado))
+}
+
+func (v Vector) ProductoEscalar(otro Vector) (int, error) {
+	if len(v.datos) != len(otro.datos) {
+		return 0,fmt.Errorf("Error: no coincide la longitud")
+	}
+	producto_escalar := 0
+	for i,_ := range v.datos {
+		producto_escalar += v.datos[i] * otro.datos[i]
+	}
+	return producto_escalar,nil
+}
